@@ -25,7 +25,7 @@ public class Space extends JPanel {
     private ArrayList<Barrier> barriers;
     private ArrayList<Bird> birds;
     private ArrayList<Bomb> bombs;
-    private Player player;
+    private Player player, playerTwo;
     private Timer timer;
     
     private int tempo = 0;
@@ -34,11 +34,13 @@ public class Space extends JPanel {
     private int bombAct = 0;
     
     private int jump = 2;
+    private int jumpTwo = 2;
     private int birdsCol = 0;
     
     private int r = 0;
     
     public boolean start  = false;
+    public boolean onePlayer  = true;
     
     public Space() {
         super();
@@ -49,7 +51,8 @@ public class Space extends JPanel {
         birds = new ArrayList<>();
         bombs = new ArrayList<>();
         player = new Player();
-        
+        playerTwo = new Player();
+                
         timer = new Timer();
         timer.scheduleAtFixedRate(new ScheduleTask(), 150, 1000/60); 
         
@@ -89,16 +92,44 @@ public class Space extends JPanel {
             g.drawString("Click Enter To Start!", 250, 400);
             g.setFont(new Font("Arial", Font.BOLD, 20));
             g.drawString("Controls:", 25, 225);
-            g.setFont(new Font("Arial", Font.PLAIN, 20));
-            g.drawString("A: Move Left", 25, 250);
-            g.drawString("D: Move Right", 25, 275);
-            g.drawString("S: Move Down", 25, 300);
-            g.drawString("T: Teleport Up (Once 2 Birds are Collected)", 25, 325);
-            g.drawString("Space Bar: Jump", 25, 350);
+            if (onePlayer) {
+                g.setFont(new Font("Arial", Font.PLAIN, 20));
+                g.drawString("A: Move Left", 25, 250);
+                g.drawString("D: Move Right", 25, 275);
+                g.drawString("S: Move Down", 25, 300);
+                g.drawString("T: Teleport Up (Once 2 Birds are Collected)", 25, 325);
+                g.drawString("W: Jump", 25, 350);
+            }
+            else {
+                g.setFont(new Font("Arial", Font.PLAIN, 20));
+                g.drawString("A & Left Arrow: Move Left", 25, 250);
+                g.drawString("D & Right Arrow: Move Right", 25, 275);
+                g.drawString("S & Down Arrow: Move Down", 25, 300);
+                g.drawString("T: Teleport Up (Once 2 Birds are Collected)", 25, 325);
+                g.drawString("W & Up Arrow: Jump", 25, 350);
+            }
+            if (onePlayer) {
+                g.setFont(new Font("Arial", Font.BOLD, 80));
+                g.setColor(Color.BLACK);
+                g.fillRect(450,480, 40, 80);
+            }
+            else {
+                g.setFont(new Font("Arial", Font.BOLD, 80));
+                
+                g.setColor(Color.BLACK);
+                g.fillRect(650, 480, 46, 80);
+            }
+            g.setColor(Color.GRAY);
+            g.drawString("1", 450, 550);
+            g.drawString("2", 650, 550);
             player.setSize(100);
-            player.setX(100);
+            player.setX(120);
             player.setY(100);
             player.setVel(0);
+            
+            playerTwo.setX(100);
+            playerTwo.setY(100);
+            playerTwo.setVel(0);
             
             jump = 2;
             birdsCol = 0;
@@ -120,6 +151,10 @@ public class Space extends JPanel {
             bi.draw(g);
 
         player.draw(g);
+        
+        if (!onePlayer) {
+            playerTwo.draw(g);
+        }
         
         //Ending "Screen"
         if (player.getX() < -500 && start == true) {
@@ -158,6 +193,8 @@ public class Space extends JPanel {
                     bo.grav();
                 }
                 player.grav();
+                playerTwo.grav();
+                playerTwo.update();
                 
                 //Controls when bombs drop
                 if (bombAct % 150 == 0 && score > 2500) {
@@ -190,14 +227,16 @@ public class Space extends JPanel {
             player.update();
             
             
-            collision();
-            borderCollision();
+            collision(player);
+            collision(playerTwo);
+            borderCollision(player);
+            borderCollision(playerTwo);
             
             repaint();
         }
     }
 
-    public void collision() {
+    public void collision(Player c) {
         for (Terrain t: terrain) {
             if (t.getX() + 10 <= player.getX() + player.getSize() && t.getY() <= player.getY() + player.getSize()) {
                 if (t.getX() + t.getWidth() >= player.getX() && t.getY() + t.getLength() >= player.getY()) {
@@ -208,63 +247,72 @@ public class Space extends JPanel {
                 }
             }
         }
+        for (Terrain t: terrain) {
+            if (t.getX() + 10 <= playerTwo.getX() + playerTwo.getSize() && t.getY() <= playerTwo.getY() + playerTwo.getSize()) {
+                if (t.getX() + t.getWidth() >= playerTwo.getX() && t.getY() + t.getLength() >= playerTwo.getY()) {
+                    playerTwo.setY(t.getY() - playerTwo.getSize());
+                    //Corrects Velocity
+                    playerTwo.setVel(0);
+                    jumpTwo = 2;
+                }
+            }
+        }
         for (Barrier t: barriers) {
-            if (t.getX() <= player.getX() + player.getSize() && t.getY() <= player.getY() + player.getSize()) {
-                if (t.getX() + t.getWidth() >= player.getX() && t.getY() + t.getLength() >= player.getY()) {
-                    player.setX(t.getX() - player.getSize() - 4);
-                    player.setDX(-5);
+            if (t.getX() <= c.getX() + c.getSize() && t.getY() <= c.getY() + c.getSize()) {
+                if (t.getX() + t.getWidth() >= c.getX() && t.getY() + t.getLength() >= c.getY()) {
+                    c.setX(t.getX() - c.getSize() - 4);
+                    c.setDX(-5);
                 }
             }
         }
         for (Platform p: platforms) {
-            if (p.getX() <= player.getX() + player.getSize() && p.getY() <= player.getY() + player.getSize()) {
-                if (p.getX() + p.getWidth() >= player.getX() && p.getY() + p.getLength() >= player.getY()) {
-                     player.setX(-1000);
+            if (p.getX() <= c.getX() + c.getSize() && p.getY() <= c.getY() + c.getSize()) {
+                if (p.getX() + p.getWidth() >= c.getX() && p.getY() + p.getLength() >= c.getY()) {
+                     c.setX(-1000000);
                 }
             }
         }
         
         for (Bird bi: birds) {
-            if (bi.getX() <= player.getX() + player.getSize() && bi.getY() <= player.getY() + player.getSize()) {
-                if (bi.getX() + bi.getSize() >= player.getX() && bi.getY() + bi.getSize() >= player.getY()) {
-                    bi.setX(-1000);
+            if (bi.getX() <= c.getX() + c.getSize() && bi.getY() <= c.getY() + c.getSize()) {
+                if (bi.getX() + bi.getSize() >= c.getX() && bi.getY() + bi.getSize() >= c.getY()) {
+                    bi.setX(-1000000);
                     jump = 1;
+                    jumpTwo = 1;
                     birdsCol++;
                 }
             }
         }
         
         for (Bomb bo: bombs) {
-            if (bo.getX() <= player.getX() + player.getSize() && bo.getY() <= player.getY() + player.getSize()) {
-                if (bo.getX() + bo.getSize() >= player.getX() && bo.getY() + bo.getSize() >= player.getY()) {
-                     player.setX(-1000);
+            if (bo.getX() <= c.getX() + c.getSize() && bo.getY() <= c.getY() + c.getSize()) {
+                if (bo.getX() + bo.getSize() >= c.getX() && bo.getY() + bo.getSize() >= c.getY()) {
+                     c.setX(-100000);
                 }
             }
         }
     }
     
-    public void borderCollision() {
-        if (player.getX() < 0) {
-            player.setX(-1000);
+    public void borderCollision(Player c) {
+        if (c.getX() < 0) {
+            c.setX(-100000);
         }
-        if (player.getX() + player.getSize() > this.getWidth()) {
-            player.setX(this.getWidth() - player.getSize() - 3);
+        if (c.getX() + c.getSize() > this.getWidth()) {
+            c.setX(this.getWidth() - c.getSize() - 3);
         }
     }
     
     public void keyPressed(KeyEvent e) {
+        //Player 1 controls
         if (e.getKeyCode() == KeyEvent.VK_D) {
             player.setDX(4);
         }
         if (e.getKeyCode() == KeyEvent.VK_A) {
             player.setDX(-4);
         }
-        if (e.getKeyCode() == KeyEvent.VK_SPACE && jump >= 1) {
+        if (e.getKeyCode() == KeyEvent.VK_W && jump >= 1) {
             player.up();
             jump--;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            start = true;
         }
         if (e.getKeyCode() == KeyEvent.VK_S) {
             player.setDY(5);
@@ -273,6 +321,34 @@ public class Space extends JPanel {
             player.setY(player.getY() - 300);
             player.setVel(0);
             birdsCol -= 2;
+        }
+        
+        //Player 2 controls
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            playerTwo.setDX(4);
+        }
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            playerTwo.setDX(-4);
+        }
+        if (e.getKeyCode() == KeyEvent.VK_UP && jumpTwo >= 1) {
+            playerTwo.up();
+            jumpTwo--;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+            playerTwo.setDY(5);
+        }
+        
+        //Controls for both
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            start = true;
+        }
+        if (start == false) {
+            if (e.getKeyCode() == KeyEvent.VK_1) {
+                onePlayer = true;
+            }
+            if (e.getKeyCode() == KeyEvent.VK_2) {
+                onePlayer = false;
+            }
         }
         if (e.getKeyCode() == KeyEvent.VK_R && r == 1) {
             start = false;
@@ -312,6 +388,7 @@ public class Space extends JPanel {
     }
     
     public void keyReleased(KeyEvent e) {
+        //Player 1
         if (e.getKeyCode() == KeyEvent.VK_D) {
             player.setDX(0);
         }
@@ -320,6 +397,17 @@ public class Space extends JPanel {
         }
         if (e.getKeyCode() == KeyEvent.VK_S) {
             player.setDY(0);
+        }
+        
+        //Player 2
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            playerTwo.setDX(0);
+        }
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            playerTwo.setDX(0);
+        }
+        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+            playerTwo.setDY(0);
         }
     }
 }
