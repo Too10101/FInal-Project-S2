@@ -13,7 +13,7 @@ import javax.swing.ImageIcon;
  *
  * @author 629469
  */
-public class Player {
+public class Bomb {
     private int x;
     private int y;
     private double dx;
@@ -23,38 +23,17 @@ public class Player {
     private ImageIcon ii;
     private Image img;
     
-    private double lift = -7;
     private double grav = .2;
     private double vel = 0;
     
-    //Constructor
-    public Player() {
-        x = 100;
-        y = 100;
-        dx = 0;
-        dy = 0;
-        size = 50;
-        ii = new ImageIcon("Ninja.gif");
-        img = ii.getImage();
-    }
-    
-    public Player(int x, int y) {
+    //Constructor  
+    public Bomb(int x, int y) {
         this.x = x;
         this.y = y;
         dx = 0;
         dy = 0;
-        size = 50;
-        ii = new ImageIcon("Ninja.gif");
-        img = ii.getImage();
-    }
-    
-    public Player(int x, int y, int size) {
-        this.x = x;
-        this.y = y;
-        dx = 0;
-        dy = 0;
-        this.size = size;
-        ii = new ImageIcon("Bird.gif");
+        size = 25;
+        ii = new ImageIcon("Bomb.gif");
         img = ii.getImage();
     }
     
@@ -68,19 +47,15 @@ public class Player {
         y += dy;
     }
     
+    public void kill() {
+        x = -9000;
+        y = -9000;
+    }
+    
     public void grav() {
         vel += grav;
         vel *= .99;
         y += vel;
-    }
-    
-    public void up() {
-        vel += lift;
-    }
-    
-    public void kill() {
-        x = -9000;
-        y = -9000;
     }
 
     //Getters and Setters
@@ -123,13 +98,4 @@ public class Player {
     public void setSize(int size) {
         this.size = size;
     }
-    
-    public double getVel() {
-        return vel;
-    }
-
-    public void setVel(double vel) {
-        this.vel = vel;
-    }
-    
 }

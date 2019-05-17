@@ -60,6 +60,10 @@ public class Barrier {
     public void update() {
         x -= dx;
     }
+    
+    public void kill() {
+            y = 4000;
+    }
 
     public int getX() {
         return x;

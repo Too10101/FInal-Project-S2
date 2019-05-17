@@ -3,7 +3,6 @@ package pkgfinal.project.s2;
 
 import java.awt.Color;
 import java.awt.Graphics;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -15,12 +14,12 @@ import java.awt.Graphics;
  * @author 629469
  */
 public class Terrain {
-    int x;
-    int y;
+    private int x;
+    private int y;
     private int dx;
     private int dy;
-    int length;
-    int width;
+    private int length;
+    private int width;
     private Color color;
     
     //Constructor
@@ -53,6 +52,16 @@ public class Terrain {
         this.length = length;
         this.width = width;
     }
+    
+    public Terrain(int x, int y, int length, int width, Color color) {
+        this.x = x;
+        this.y = y;
+        dx = 2;
+        dy = 0;
+        this.color = color;
+        this.length = length;
+        this.width = width;
+    }
 
     public void draw(Graphics g) {
         g.setColor(color);
@@ -61,6 +70,10 @@ public class Terrain {
     
     public void update() {
             x -= dx;
+    }
+    
+    public void kill() {
+            y = 4000;
     }
 
     public int getX() {
