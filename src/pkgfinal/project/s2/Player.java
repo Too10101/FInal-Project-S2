@@ -34,7 +34,7 @@ public class Player {
         dx = 0;
         dy = 0;
         size = 50;
-        ii = new ImageIcon("Ninja.gif");
+        ii = new ImageIcon(getClass().getResource("/Images/Ninja.GIF"));
         img = ii.getImage();
     }
     
@@ -44,7 +44,7 @@ public class Player {
         dx = 0;
         dy = 0;
         size = 50;
-        ii = new ImageIcon("Ninja.gif");
+        ii = new ImageIcon(getClass().getResource("/Images/Ninja.GIF"));
         img = ii.getImage();
     }
     
@@ -54,7 +54,7 @@ public class Player {
         dx = 0;
         dy = 0;
         this.size = size;
-        ii = new ImageIcon("Bird.gif");
+        ii = new ImageIcon(getClass().getResource("/Images/Bird.GIF"));
         img = ii.getImage();
     }
     
