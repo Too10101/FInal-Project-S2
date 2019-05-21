@@ -126,10 +126,12 @@ public class Space extends JPanel {
             player.setX(120);
             player.setY(100);
             player.setVel(0);
+             player.setDX(0);
             
             playerTwo.setX(100);
             playerTwo.setY(100);
             playerTwo.setVel(0);
+            playerTwo.setDX(0);
             
             jump = 2;
             birdsCol = 0;

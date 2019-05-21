@@ -33,7 +33,7 @@ public class Bomb {
         dx = 0;
         dy = 0;
         size = 25;
-        ii = new ImageIcon(getClass().getResource("/Images/Bomb.GIF"));
+        ii = new ImageIcon(getClass().getResource("/Images/Bomb.gif"));
         img = ii.getImage();
     }
     
